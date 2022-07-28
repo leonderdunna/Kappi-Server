@@ -4,5 +4,5 @@ import { Column, Entity, ObjectID, ObjectIdColumn, PrimaryGeneratedColumn } from
 export class User {
     @ObjectIdColumn() id:ObjectID;
     @Column() name:string;
-    @Column() password:string;
+    @Column() passwort:string;
 }

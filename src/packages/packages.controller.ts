@@ -7,36 +7,36 @@ import { PackagesService } from './packages.service';
 export class PackagesController {
     constructor(private packageService: PackagesService, private userService: UserService) { }
     @Get()
-    async findAll(@Param() params): Promise<Package[]> {
-        if (!await this.userService.testPassword(params.username, params.password)) return [];
-        let packs: Package[] = await this.packageService.findAll()
+    async findAll(@Param() params) {
+        // if (!await this.userService.verify(params.username, params.password)) return [];
+        // let packs: Package[] = await this.packageService.findAll()
 
-        packs = packs.filter((e) => {
-            if (e.user.indexOf(params.username) != -1) return true; return false;
-        })
-        return packs
+        // packs = packs.filter((e) => {
+        //     if (e.user.indexOf(params.username) != -1) return true; return false;
+        // })
+        // return packs
 
     }
 
     @Get(':id')
-    async findPackage(@Param() params): Promise<Package> {
-        if (!await this.userService.testPassword(params.username, params.password)) return null;
-        let pack: Package = await this.packageService.findOne(params.id)
-        if (pack.user.indexOf(params.username) != -1)
-            return pack;
-        return null;
+    async findPackage(@Param() params){
+        // if (!await this.userService.testPassword(params.username, params.password)) return null;
+        // let pack: Package = await this.packageService.findOne(params.id)
+        // if (pack.user.indexOf(params.username) != -1)
+        //     return pack;
+        // return null;
     }
     @Post()
     async addPackage(@Param() params, @Body() body): Promise<any> {
-        if (!await this.userService.testPassword(params.username, params.password)) return;
-        this.packageService.add(body.package)
+        // if (!await this.userService.testPassword(params.username, params.password)) return;
+        // this.packageService.add(body.package)
     }
     @Put()
     async updatePackage(@Param() params, @Body() body): Promise<any> {
-        if (!await this.userService.testPassword(params.username, params.password)) return;
+        // if (!await this.userService.testPassword(params.username, params.password)) return;
 
-        let pack: Package = await this.packageService.findOne(body.package.id)
-        if (pack.user.indexOf(params.username) != -1)
-            this.packageService.update(body.package)
+        // let pack: Package = await this.packageService.findOne(body.package.id)
+        // if (pack.user.indexOf(params.username) != -1)
+        //     this.packageService.update(body.package)
     }
 }

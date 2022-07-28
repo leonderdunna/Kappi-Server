@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { ObjectID, Repository } from 'typeorm';
@@ -10,42 +10,43 @@ export class UserService {
 
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-) { }
-    async testPassword(username: string, password: string): Promise<boolean> {
-        let u = await this.userRepository.findOne({ name: username })
-        console.log(username)
-        console.log(u)
-        if (u)
-            return (u.name == username && u.password == password)
-        else { return false }
-
+    ) { }
+    async verify(user: User): Promise<boolean> {
+        if (user == undefined) return false
+        let u = await this.userRepository.findOne({ name: user.name })
+        if (u == undefined) return false
+        return user.passwort==u.passwort
     }
     async findAll(): Promise<string[]> {
         let u = await this.userRepository.find()
         let unames = u.map((e) => { return e.name })
         return unames;
     }
-    async addUser(username: string, password: string): Promise<boolean> {
-        let u = await this.userRepository.find({ "name": username })
+    async addUser(user: User): Promise<boolean> {
+        let u = await this.userRepository.find({ "name": user.name })
         if (u.length == 0) {
-            this.userRepository.insert({ name: username, password: password })
+            this.userRepository.insert({ name: user.name, passwort: user.passwort })
             return true
         }
         return false
     }
-    async deleteUser(username: string): Promise<boolean> {
-        let success: boolean;
-        let u = await this.userRepository.findOne({ "name": username })
-        if (u) success = true;
+    async deleteUser(user:User): Promise<boolean> {
+        
+        let u = await this.userRepository.findOne({ "name": user.name })
+        if(u==undefined)
+        throw new HttpException('User nicht gefunden',HttpStatus.NOT_FOUND)
         this.userRepository.delete(u.id)
-        return success
+        return true
+
+      
     }
     async getId(username: string): Promise<ObjectID> {
         let u = await this.userRepository.findOne({ name: username })
         return u.id
     }
-    async updateUser(id: ObjectID, password: string): Promise<any> {
-        return this.userRepository.update(id, { password: password })
+    async updateUser(user:User,neuesPasswort:string): Promise<any> {
+        let u =await this.userRepository.findOne({name:user.name})
+        return this.userRepository.update(u.id, { passwort: neuesPasswort })
     }
 
     //  async getStats(username: string): Promise<Stats> {

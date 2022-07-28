@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, HttpException, HttpStatus } from '@nestjs/common';
 import { StatsService } from 'src/stats/stats.service';
 import { UserService } from 'src/user/user.service';
 import { Cards } from './card.entity';
@@ -11,8 +11,13 @@ export class CardsController {
         private userService: UserService, private statsService: StatsService) { }
 
     @Get()
-    getCards(): Promise<Cards[]> {
-        return this.cardsService.findAll()
+    async getCards(@Body() body): Promise<any> {
+        if (!await this.userService.verify(body.user)) {
+            throw new HttpException('Benutzer ungültig',HttpStatus.FORBIDDEN)
+        
+        }
+        console.log(await this.userService.verify(body.user))
+        return true
     }
 
     @Get(':id')
@@ -20,19 +25,19 @@ export class CardsController {
         return this.cardsService.findOne(params.id)
     }
 
-    @Post(':username/:password')
+    @Post('')
     addCard(@Body() body): any {
-        console.log(body.card)
-       return this.cardsService.add(body.card)
-        
+        console.log(body)
+        // return this.cardsService.add(body.card)
+
     }
 
-    @Put(':username/:password')
+    @Put('')
     update(@Body() body): void {
         this.cardsService.update(body.card)
     }
 
-    @Delete(':username/:password/:id')
+    @Delete(':id')
     deleteCard(@Param() params): void {
         this.cardsService.deleteCard(params.id)
         this.statsService.deleteByCard(params.id)
